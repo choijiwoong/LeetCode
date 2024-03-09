@@ -1,17 +1,36 @@
 class Solution {
-    public String gcdOfStrings(String str1, String str2) {
-        if(str2.length()>str1.length()){//str1이 str2보다 길게 유지
-            String temp=str1;
-            str1=str2;
-            str2=temp;
-        }
+    public String decodeString(String s) {
+        int size=s.length();
 
-        for(int index=str2.length(); index>0; index--){
-            String word=str2.substring(0,index);
-            if(str2.split(word).length==0 && str1.split(word).length==0){
-                return word;
+        /*
+        숫자 뒤 괄호열림은 *연산, ]뒤 숫자는 +연산, 문자뒤 숫자도 +연산, [없이 문자는 +연산
+         */
+        StringBuilder result=new StringBuilder();
+        Stack<Integer> stack_i=new Stack<>();
+        Stack<Character> stack_c=new Stack<>();
+        StringBuilder integer_parser=new StringBuilder();
+        for(char c: s.toCharArray()){
+            if('a'<=c && c<='z'){
+                stack_c.push(c);
+            } else if(c=='['){
+                stack_i.push(Integer.valueOf(integer_parser.toString()));
+                integer_parser.delete(0, integer_parser.length());
+                stack_c.push(c);
+            } else if(c==']'){
+                char tmp=stack_c.pop();
+                String target="";
+                while (tmp!='['){
+                    target=tmp+target;
+                    tmp=stack_c.pop();
+                }
+                int repeat=stack_i.pop();
+                result.append(target.repeat(repeat));
+            } else if('0'<=c && c<'9'){
+                integer_parser.append(c);
+            } else{
+
             }
         }
-        return "";
+        return result.toString();
     }
 }
