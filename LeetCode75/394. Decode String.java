@@ -44,12 +44,14 @@ class Solution {
                     expression.append('+');
             }
         }
-        System.out.println("normal expression: "+expression.toString());
+        //System.out.print("normal expression: "+expression.toString());
 
         StringBuilder post_expression=new StringBuilder();
         Stack<Character> stack=new Stack<>();
         //step 2
-        for(char c : expression.toString().toCharArray()){
+        char[] charr2=expression.toString().toCharArray();
+        for(int i=0; i< charr2.length; i++){
+            char c=charr2[i];
             switch(c){
                 case '+': case'*':
                     while(!stack.isEmpty() && (priority(c)<=priority(stack.peek())))
@@ -68,6 +70,9 @@ class Solution {
                     break;
                 default:
                     post_expression.append(c);
+                    if(is_num(c) && i+1< charr2.length && !is_num(charr2[i+1])){
+                        post_expression.append("/");//숫자 끝의 표시
+                    }
                     break;
             }
         }
@@ -75,18 +80,28 @@ class Solution {
         while(!stack.isEmpty()){
             post_expression.append(stack.pop());
         }
-        System.out.println("post_expression: "+post_expression.toString());
+        //System.out.print(",\tpost_expression: "+post_expression.toString());
 
         //step3
         Stack<String> stringStack=new Stack<>();
         String op1, op2;
-        for(char c: post_expression.toString().toCharArray()){
-            String c_s=""+c;
+        char[] charr=post_expression.toString().toCharArray();
+        for(int i=0; i<charr.length; i++){
+            String c_s=""+charr[i];
+
             if(!c_s.equals("+") && !c_s.equals("*")){
                 stringStack.push(c_s);
             } else{
                 op2= stringStack.pop();
                 op1= stringStack.pop();
+                //특수처리시작
+                if(op1.equals("/")){
+                    op1=stringStack.pop();//숫자
+                    while(!stringStack.isEmpty()&&is_num(stringStack.peek().charAt(0))){
+                        op1=stringStack.pop()+op1;
+                    }
+                }
+                //특수처리종료
                 if(c_s.equals("+")){
                     stringStack.push(""+op1+op2);
                 } else if(c_s.equals("*")){
@@ -94,7 +109,7 @@ class Solution {
                 }
             }
         }
-        System.out.println("result: "+stringStack.peek());
+        //System.out.println(",\tresult: "+stringStack.peek());
         return stringStack.pop();
     }
 }
