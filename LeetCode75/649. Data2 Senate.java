@@ -24,6 +24,32 @@ class Solution {
 
         return -1;
     }
+
+    private boolean is_announce_the_victory(int index){
+        for(int i=0; i<index-1; i++){
+            if(result.charAt(i)==deleted_mark)
+                continue;
+            if(result.charAt(i)!=result.charAt(i+1)) {
+                return false;
+            }
+        }
+
+        for(int i=index+1; i<result.length()-2; i++){
+            if(result.charAt(i)==deleted_mark)
+                continue;
+            if(result.charAt(i)!=result.charAt(i+1)){
+                return false;
+            }
+        }
+
+        if(index>=result.length() ||
+                (result.charAt(index)==result.charAt(index+1))
+                        && (result.charAt(index)!=deleted_mark)){
+            return false;
+        }
+
+        return true;
+    }
     public String predictPartyVictory(String senate) {
         int size=senate.length();
         result=new StringBuilder(senate);
@@ -33,6 +59,12 @@ class Solution {
                 int val=delete_near_opponent(i);
                 if(val==-1){
                     return result.charAt(i)=='R'?"Radiant":"Dire";
+                } else if(val==1 || val==0) {
+                    continue;
+                } else if(is_announce_the_victory(i)) {
+                    return result.charAt(0) == 'R' ? "Radiant" : "Dire";
+                }else{
+                    System.out.println("ERROR");
                 }
             }
         }
