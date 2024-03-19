@@ -14,18 +14,20 @@ class Solution {
         for(ListNode i=head; i.next!=null; i=i.next){
             size++;
         }
+        
+        if(size==1)
+            return null;
 
-        int index=0, middle_index=size/2;//4면 2가되고 3이면 1이 되고.
-        System.out.println(middle_index);
+        int index=0, middle_index=size/2;
         for(ListNode i=head; i.next!=null; i=i.next, index++){
             if(index==middle_index-1){
-                if(i.next.next!=null)
+                if(i.next.next!=null){
                     i.next=i.next.next;
-                else
+                } else{
                     i.next=null;
-                break;
+                    break;
+                }
             }
-            index++;
         }
 
         return head;
