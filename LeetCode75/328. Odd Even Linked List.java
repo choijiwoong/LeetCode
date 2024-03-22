@@ -28,6 +28,8 @@ class Solution {
 
         ListNode head2=null, iter2=null, iter=head, prev=head;
         for(int i=0; i<size; i++){
+            if(i==5)
+                System.out.println();
             if(i==0){
                 iter=iter.next;
             } else if(i==1){
@@ -42,7 +44,7 @@ class Solution {
                 iter=iter.next;
             } else if(i%2==1){
                 iter2.next=new ListNode(iter.val);
-                iter2=iter.next;
+                iter2=iter2.next;
                 iter=iter.next;
                 prev.next=iter;
             }//공통코드는 없다.
