@@ -13,43 +13,40 @@ class Solution {
         /*
             시간복잡도 O(n), 공간복잡도 O(1)로 홀수번째 node를 뒤로 link
          */
+        //1. 예외처리(head가 비어있거나 하나일 경우)
         if(head==null){
             return null;
         } else if(head.next==null){
             return head;
         }
 
-        ListNode tail;
-        int size=2;
-        for(tail=head.next; tail.next!=null; tail=tail.next){size++;}
-        System.out.println("size: "+size);
-
-        ListNode tmp;
-        while(head.val%2==0){//첫원소는 무조건 홀수
-            tmp=head.next;
-            head.next=null;
-            tail.next=head;
-            tail=tail.next;
-            head=tmp;
+        //2. 전체 size 계산
+        int size=1;
+        for(ListNode i=head; i.next!=null; i=i.next){
+            size++;
         }
 
-        int i=0;
-        tmp=null;
-        for(ListNode prev=head, node=head.next; node!=null&&i<size; i++){
-            System.out.printf("prev: %d, node: %d, node.next: %d\n", prev.val, node.val, node.next.val);
-            if(node.val%2==0){
-                System.out.printf("Target detected. node: %d\n", node.val);
-                prev.next=node.next;
-                tail.next=node;
-                tail=tail.next;//tail=node
-                tail.next=null;
-                node=prev.next;//node가 null로 변경
-            } else{
-                prev=node;
-                node=node.next;
-            }
-            i++;
-        }
+        ListNode head2=null, iter2=null, iter=head, prev=head;
+        for(int i=0; i<size; i++){
+            if(i==0){
+                iter=iter.next;
+            } else if(i==1){
+                head2=new ListNode(iter.val);
+                iter2=head2;
+                iter=iter.next;
+                prev.next=iter;
+            } else if(i==size-1){//merge
+                iter.next=head2;
+            } else if(i%2==0){
+                prev=iter;
+                iter=iter.next;
+            } else if(i%2==1){
+                iter2.next=new ListNode(iter.val);
+                iter2=iter.next;
+                iter=iter.next;
+                prev.next=iter;
+            }//공통코드는 없다.
+        }//endfor
 
         return head;
     }
