@@ -35,7 +35,7 @@ class Solution {
     private void DFS(TreeNode node){
         if (node==null)
             return;
-        if(max_zigzag_length==tree_depth-1)
+        if(max_zigzag_length>=tree_depth-2)
             return;
     
         if(node.left!=null){
