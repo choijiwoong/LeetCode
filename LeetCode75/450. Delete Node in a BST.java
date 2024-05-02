@@ -31,23 +31,42 @@ class Solution {
 
     private void branch_per_child_node(TreeNode node){//삭제대상의 노드를 찾았을 때, 해당 노드의 자식 개수에 따른 작업 분기처리
         TreeNode parent=get_parent_node(this.rt, node);//삭제 대상의 부모노드
-        if(node.left==null && node.right==null){//삭제 대상 노드의 자식이 없을 경우
-            if(parent.left==node)//부모와의 연결을 끊음
-                parent.left=null;
+        if(parent!=null){//삭제하고자하는 노드가 루트노드가 아니라면
+            if(node.left==null && node.right==null){//삭제 대상 노드의 자식이 없을 경우
+                if(parent.left==node)//부모와의 연결을 끊음
+                        parent.left=null;
             else
-                parent.right=null;
-        } else if(node.left==null && node.right!=null){//삭제 대상 노드의 자식이 1개일 경우
+                    parent.right=null;
+                } else if(node.left==null && node.right!=null){//삭제 대상 노드의 자식이 1개일 경우
             if(parent.left==node)//부모와 삭제대상 자식노드와 연경
-                parent.left=node.right;
-            else
-                parent.right=node.right;
-        } else if(node.left!=null && node.right==null){//삭제 대상 노드의 자식이 1개일 경우
-            if(parent.left==node)//부모와 삭제대상 자식노드와 연결
-                parent.left=node.left;
-            else
-                parent.right=node.left;
-        } else {//삭제 대상 노드의 자식이 2개일 경우
-            replace_and_disconnect(parent, node);//대체값을 찾고 연결을 끊는 함수 호출
+                 parent.left=node.right;
+                else
+                    parent.right=node.right;
+            } else if(node.left!=null && node.right==null){//삭제 대상 노드의 자식이 1개일 경우
+                if(parent.left==node)//부모와 삭제대상 자식노드와 연결
+                    parent.left=node.left;
+                else
+                    parent.right=node.left;
+            } else {//삭제 대상 노드의 자식이 2개일 경우
+                replace_and_disconnect(parent, node);//대체값을 찾고 연결을 끊는 함수 호출
+            }
+        } else {
+            //부모노드가 삭제 대상이어서 parent와의 disconnet가 필요하지 않다면
+            System.out.println("여기양");
+            if(node.right==null)
+                return;
+            TreeNode victim_1=left_1(node.right);
+            TreeNode victim;
+            if(victim_1==null){//루트노드 삭제
+                victim_1=node;
+                victim=node.right;
+                this.rt=victim;
+                this.rt.left=victim_1.left;
+            } else{
+                victim=victim_1.left;
+                victim_1.left=null;
+                node.val=victim.val;
+            }
         }
     }
 
@@ -67,26 +86,30 @@ class Solution {
     }
     
     private TreeNode left_1(TreeNode node){
+        if(node.left==null)
+            return null;
         if(node.left!=null && node.left.left==null)
             return node;
         return left_1(node.left);
     }
 
     private TreeNode right_1(TreeNode node){
+        if(node.right==null)
+            return null;
         if(node.right!=null && node.right.right==null)
             return node;
         return right_1(node.right);
     }
 
     public TreeNode deleteNode(TreeNode root, int key){
-        this.rt=root;//루트노드 멤버변수로 설정. 재귀형식으로 함수를 작성할거기에 다양한 접근이 필요.
         if(root==null)//루트가 비어있을 경우
             return null;
         if(root.left==null && root.right==null && root.val==key)//루트의 자식이 없고 루트가 삭제 대상일 경우
             return null;
 
+        this.rt=root;//루트노드 멤버변수로 설정. 재귀형식으로 함수를 작성할거기에 다양한 접근이 필요.
         remove(root, key);//실질적인 삭제작업 수행
 
-        return root;
+        return this.rt;
     }
 }
