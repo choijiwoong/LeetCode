@@ -4,15 +4,44 @@ class Solution {
     private void replace_and_disconnect(TreeNode parent, TreeNode node){//삭제할 대상의 부모노드, 삭제할 대상노드. 대상노드를 대체할 최적값을 찾음
         TreeNode victim_1, victim;//삭제대상 노드와 swap될 대상노드의 부모노드
         if(parent.right==node){//swap 대상노드 탐색을 위한 방향설정
-            victim_1=left_1(node);//swap대상 노드의 부모노드
-            victim=victim_1.left;//swap대상 노드
-            victim_1.left=null;//disconnection
-            node.val=victim.val;//swap
+            if(node.right.left==null){
+                victim_1=node;
+                victim=node.right;
+                parent.right=victim;
+                victim.left=node.left;
+            } else {
+                if(node.right!=null){
+                    System.out.println("check");
+                    victim_1=left_1(node.right);//swap대상 노드의 부모노드
+                    victim=victim_1.left;//swap대상 노드
+                    victim_1.left=victim.right;//disconnection gdgdgd
+                    node.val=victim.val;//swap
+                } else {
+                    victim_1=left_1(node);//swap대상 노드의 부모노드
+                    victim=victim_1.left;//swap대상 노드
+                    victim_1.left=null;//disconnection
+                    node.val=victim.val;//swap
+                }
+            }
         } else {
-            victim_1=right_1(node);
-            victim=victim_1.right;
-            victim_1.right=null;
-            node.val=victim.val;
+            if(node.left.right==null){
+                victim_1=node;
+                victim=node.left;
+                parent.left=victim;
+                victim.right=node.right;
+            } else {
+                if(node.left!=null){
+                    victim_1=right_1(node.left);
+                    victim=victim_1.right;
+                    victim_1.right=victim.left;//dgdg
+                    node.val=victim.val;
+                } else {
+                    victim_1=right_1(node);
+                    victim=victim_1.right;
+                    victim_1.right=null;
+                    node.val=victim.val;
+                }
+            }
         }
     }
 
@@ -35,11 +64,11 @@ class Solution {
             if(node.left==null && node.right==null){//삭제 대상 노드의 자식이 없을 경우
                 if(parent.left==node)//부모와의 연결을 끊음
                         parent.left=null;
-            else
+                else
                     parent.right=null;
-                } else if(node.left==null && node.right!=null){//삭제 대상 노드의 자식이 1개일 경우
-            if(parent.left==node)//부모와 삭제대상 자식노드와 연경
-                 parent.left=node.right;
+            } else if(node.left==null && node.right!=null){//삭제 대상 노드의 자식이 1개일 경우
+                if(parent.left==node)//부모와 삭제대상 자식노드와 연경
+                    parent.left=node.right;
                 else
                     parent.right=node.right;
             } else if(node.left!=null && node.right==null){//삭제 대상 노드의 자식이 1개일 경우
@@ -51,8 +80,11 @@ class Solution {
                 replace_and_disconnect(parent, node);//대체값을 찾고 연결을 끊는 함수 호출
             }
         } else {
-            //부모노드가 삭제 대상이어서 parent와의 disconnet가 필요하지 않다면
-            System.out.println("여기양");
+            //루트노드가 삭제 대상이어서 parent와의 disconnet가 필요하지 않다면
+            if(node.right==null&& node.left!=null){
+                this.rt=node.left;
+                return;
+            }
             if(node.right==null)
                 return;
             TreeNode victim_1=left_1(node.right);
