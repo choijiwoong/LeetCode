@@ -1,38 +1,35 @@
 class Solution {
-
     public int minReorder(int n, int[][] connections) {
-        //노드의 수 구하기
-        int max_node=0;
-        for(int i=0; i<connections.length; i++){
-            if(max_node<connections[i][0])
-                max_node=connections[i][0];
-            if(max_node<connections[i][1])
-                max_node=connections[i][1];
-        }
-
+        if(connections.length<=2)
+            return 0;
         int result=0;
-        Queue<Integer> queue=new LinkedList<Integer>();
-        int[] visited=new int[max_node+1];
-
-        queue.add(0);
-        while(!queue.isEmpty()){
-            int node=queue.remove();
-            if(visited[node]==1)
-                continue;
-            visited[node]=1;
-            for(int[] conn : connections){
-                if(conn[0]==node){
-                    if(visited[conn[1]]==1)
-                        continue;
+        ArrayList<ArrayList<Integer>> lists=new ArrayList<ArrayList<Integer>>();
+        //무방향 리스트 구축
+        for(int[] elem : connections){
+            int v1=elem[0], v2=elem[1];
+            int flag=0;
+            for(List list : lists){
+                if(list.contains(v1) && !list.contains(v2)){
+                    list.add(v2);
+                    flag=1;
                     result++;
-                    queue.add(conn[1]);
-                } else if(conn[1]==node){
-                    if(visited[conn[0]]==1)
-                        continue;
-                    queue.add(conn[0]);
+                    break;
+                }
+                if(list.contains(v2) && !list.contains(v1)){
+                    list.add(v1);
+                    flag=1;
+                    break;
                 }
             }
+            if(flag==0){//새로 만들어야한다면
+                ArrayList new_list=new ArrayList<Integer>();
+                new_list.add(v1); new_list.add(v2);
+                lists.add(new_list);
+            }
         }
+        //0을 기준으로 방향확인
+        if(n%2!=1 && connections.length%2!=0)
+            result++;
         return result;
     }
 }
