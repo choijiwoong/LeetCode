@@ -28,16 +28,26 @@ class Solution {
 
         for(int i=0; i<equations.size(); i++){
             List<String> simple_equation=abbreviation(equations.get(i));
-            db.put(simple_equation, values[i]);
+            db.put(simple_equation, values[i]);//equation을 db에 저장
 
             List<String> reverse_equation=new ArrayList<>();
             reverse_equation.add(simple_equation.get(1));
             reverse_equation.add(simple_equation.get(0));
-            db.put(reverse_equation, 1/values[i]);
+            db.put(reverse_equation, 1/values[i]);//역순 equation을 db에 저장
+
+            List<String> preceding_duplicated_equation=new ArrayList<>();
+            preceding_duplicated_equation.add(simple_equation.get(0));
+            preceding_duplicated_equation.add(simple_equation.get(0));
+            db.put(preceding_duplicated_equation, 1.0);
+            List<String> consequent_duplicated_equation=new ArrayList<>();
+            consequent_duplicated_equation.add(simple_equation.get(1));
+            consequent_duplicated_equation.add(simple_equation.get(1));
+            db.put(consequent_duplicated_equation, -1.0);
         }
 
         double[] result=new double[queries.size()];
         for(int i=0; i<queries.size(); i++){
+            //db에 query식이 그대로 들어가 있는지 확인
             if(db.containsKey(queries.get(i)))
                 result[i]=db.get(queries.get(i));
             else
