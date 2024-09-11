@@ -27,14 +27,67 @@ class Solution {
         Map<List<String>, Double> db=new HashMap();
 
         for(int i=0; i<equations.size(); i++){
+            //equation과 동일한 query인 경우의 처리를 위해 약분한 결과와 그 역을 db에 저장
             List<String> simple_equation=abbreviation(equations.get(i));
             db.put(simple_equation, values[i]);//equation을 db에 저장
-
             List<String> reverse_equation=new ArrayList<>();
             reverse_equation.add(simple_equation.get(1));
             reverse_equation.add(simple_equation.get(0));
             db.put(reverse_equation, 1/values[i]);//역순 equation을 db에 저장
+        }
 
+        //연립을 위해 동일한 항을 가지는 항을 찾아 나머지 두개를 이용하여, 연립 항 정보를 찾아 db에 넣는다.
+        Map<List<String>, Double> new_db=new HashMap<>();
+        for(Map.Entry<List<String>, Double> eq1 : db.entrySet()){
+            for(Map.Entry<List<String>, Double> eq2 : db.entrySet()){
+                if(eq1.equals(eq2))
+                    continue;
+                List<String> new_equation=new ArrayList<>();
+                List<String> rev_new_equation=new ArrayList<>();
+                double new_value=-1.0, rev_new_value=-1.0;
+
+                if(eq1.getKey().get(0).equals(eq2.getKey().get(0))){//case 1
+                    new_equation.add(eq2.getKey().get(1));
+                    new_equation.add(eq1.getKey().get(1));
+                    new_value=eq1.getValue()/eq2.getValue();
+
+                    rev_new_equation.add(eq1.getKey().get(1));
+                    rev_new_equation.add(eq2.getKey().get(1));
+                    rev_new_value=1/new_value;
+                } else if(eq1.getKey().get(0).equals(eq2.getKey().get(1))){//case2
+                    new_equation.add(eq2.getKey().get(0));
+                    new_equation.add(eq1.getKey().get(1));
+                    new_value=eq1.getValue()*eq2.getValue();
+
+                    rev_new_equation.add(eq1.getKey().get(1));
+                    rev_new_equation.add(eq2.getKey().get(0));
+                    rev_new_value=1/new_value;
+                } else if(eq1.getKey().get(1).equals(eq2.getKey().get(0))){//case3
+                    new_equation.add(eq1.getKey().get(0));
+                    new_equation.add(eq2.getKey().get(1));
+                    new_value=eq1.getValue()/eq2.getValue();
+
+                    rev_new_equation.add(eq2.getKey().get(1));
+                    rev_new_equation.add(eq1.getKey().get(0));
+                    rev_new_value=1/new_value;
+                } else if(eq1.getKey().get(1).equals(eq2.getKey().get(1))){//case4
+                    new_equation.add(eq1.getKey().get(0));
+                    new_equation.add(eq2.getKey().get(0));
+                    new_value=eq1.getValue()/eq2.getValue();
+
+                    rev_new_equation.add(eq2.getKey().get(0));
+                    rev_new_equation.add(eq1.getKey().get(0));
+                    rev_new_value=1/new_value;
+                }
+                new_db.put(new_equation, new_value);
+                new_db.put(rev_new_equation, rev_new_value);
+            }
+        }
+        db.putAll(new_db);
+
+        for(int i=0; i<equations.size(); i++){
+            //동일한 전항과 후항을 갖을 경우 처리를 위해 db에 저장.
+            List<String> simple_equation=abbreviation(equations.get(i));
             List<String> preceding_duplicated_equation=new ArrayList<>();
             preceding_duplicated_equation.add(simple_equation.get(0));
             preceding_duplicated_equation.add(simple_equation.get(0));
