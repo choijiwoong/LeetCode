@@ -101,7 +101,7 @@ class Solution {
             List<String> consequent_duplicated_equation=new ArrayList<>();
             consequent_duplicated_equation.add(simple_equation.get(1));
             consequent_duplicated_equation.add(simple_equation.get(1));
-            db.put(consequent_duplicated_equation, -1.0);
+            db.put(consequent_duplicated_equation, 1.0);
         }
 
         System.out.println(db.size());
