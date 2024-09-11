@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 class Solution {
     private List<String> abbreviation(List<String> equation){
         StringBuilder eq1=new StringBuilder(equation.get(0));
@@ -36,6 +41,7 @@ class Solution {
             db.put(reverse_equation, 1/values[i]);//역순 equation을 db에 저장
         }
 
+        System.out.println(db.size());
         //연립을 위해 동일한 항을 가지는 항을 찾아 나머지 두개를 이용하여, 연립 항 정보를 찾아 db에 넣는다.
         Map<List<String>, Double> new_db=new HashMap<>();
         for(Map.Entry<List<String>, Double> eq1 : db.entrySet()){
@@ -45,7 +51,7 @@ class Solution {
                 List<String> new_equation=new ArrayList<>();
                 List<String> rev_new_equation=new ArrayList<>();
                 double new_value=-1.0, rev_new_value=-1.0;
-
+                System.out.println(eq1.getKey().get(0)+", "+eq1.getKey().get(1)+", "+eq2.getKey().get(0)+", "+eq2.getKey().get(1));
                 if(eq1.getKey().get(0).equals(eq2.getKey().get(0))){//case 1
                     new_equation.add(eq2.getKey().get(1));
                     new_equation.add(eq1.getKey().get(1));
@@ -85,8 +91,8 @@ class Solution {
         }
         db.putAll(new_db);
 
+        //동일한 전항과 후항을 갖을 경우 처리를 위해 db에 저장.
         for(int i=0; i<equations.size(); i++){
-            //동일한 전항과 후항을 갖을 경우 처리를 위해 db에 저장.
             List<String> simple_equation=abbreviation(equations.get(i));
             List<String> preceding_duplicated_equation=new ArrayList<>();
             preceding_duplicated_equation.add(simple_equation.get(0));
@@ -98,15 +104,42 @@ class Solution {
             db.put(consequent_duplicated_equation, -1.0);
         }
 
+        System.out.println(db.size());
+        System.out.println(db.entrySet().size());
+        for(Map.Entry<List<String>, Double> data: db.entrySet())
+            System.out.println("key: "+data.getKey().get(0)+", "+data.getKey().get(1)+" / value: "+data.getValue());
+
+
         double[] result=new double[queries.size()];
         for(int i=0; i<queries.size(); i++){
             //db에 query식이 그대로 들어가 있는지 확인
             if(db.containsKey(queries.get(i)))
                 result[i]=db.get(queries.get(i));
+            else if(db.containsKey(abbreviation(queries.get(i))))
+                result[i]=db.get(abbreviation(queries.get(i)));
             else
                 result[i]=-1;
 
         }
         return result;
+    }
+
+    public static void main(String[] args){
+        Solution solution=new Solution();
+
+        List<String> eq1=new ArrayList<>(), eq2=new ArrayList<>();
+        eq1.add("a"); eq1.add("b"); eq2.add("b"); eq2.add("c");
+        List<List<String>> equations=new ArrayList<>();
+        equations.add(eq1); equations.add(eq2);
+
+        double[] values=new double[2];
+        values[0]=2.0; values[1]=3.0;
+
+        List<String> qur1=new ArrayList<>();
+        qur1.add("a"); qur1.add("b");
+        List<List<String>> queries=new ArrayList<>();
+        queries.add(qur1);
+
+        solution.calcEquation(equations, values, queries);
     }
 }
