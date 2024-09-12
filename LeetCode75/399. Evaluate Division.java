@@ -39,7 +39,7 @@ class Solution {
         //equations순회하며 동일한건 제거
         //그대로 db에 넣으면서 거꾸로 value도 넣음
         //queries에 db에 있으면 value를 리턴
-        Map<List<String>, Double> db=new HashMap();
+        Map<List<String>, Double> db=new HashMap<>();
         //기본값 저장
         List<String> default_data=new ArrayList<>();
         default_data.add("1"); default_data.add("1");
@@ -47,12 +47,14 @@ class Solution {
         Set<Character> used_chars=new HashSet<>();
 
         for(int i=0; i<equations.size(); i++){
-            for(char c: equations.get(i).get(0).toCharArray()){
-                used_chars.add(c);
-            }
-            for(char c: equations.get(i).get(1).toCharArray()){
-                used_chars.add(c);
-            }
+            //사용한 문자 표시
+            for(char c: equations.get(i).get(0).toCharArray())
+                if(Character.isAlphabetic(c))
+                    used_chars.add(c);
+            for(char c: equations.get(i).get(1).toCharArray())
+                if(Character.isAlphabetic(c))
+                    used_chars.add(c);
+
             //equation과 동일한 query인 경우의 처리를 위해 약분한 결과와 그 역을 db에 저장
             List<String> simple_equation=abbreviation(equations.get(i));
             db.put(simple_equation, values[i]);//equation을 db에 저장
@@ -62,17 +64,16 @@ class Solution {
             db.put(reverse_equation, 1/values[i]);//역순 equation을 db에 저장
         }
 
-        System.out.println(db.size());
         //연립을 위해 동일한 항을 가지는 항을 찾아 나머지 두개를 이용하여, 연립 항 정보를 찾아 db에 넣는다.
         Map<List<String>, Double> new_db=new HashMap<>();
         for(Map.Entry<List<String>, Double> eq1 : db.entrySet()){
             for(Map.Entry<List<String>, Double> eq2 : db.entrySet()){
-                if(eq1.equals(eq2))
+                if(eq1.equals(eq2))//동일한 값이면 넘어감. 연립할게없음
                     continue;
                 List<String> new_equation=new ArrayList<>();
                 List<String> rev_new_equation=new ArrayList<>();
                 double new_value=-1.0, rev_new_value=-1.0;
-                System.out.println(eq1.getKey().get(0)+", "+eq1.getKey().get(1)+", "+eq2.getKey().get(0)+", "+eq2.getKey().get(1));
+                //System.out.println(eq1.getKey().get(0)+", "+eq1.getKey().get(1)+", "+eq2.getKey().get(0)+", "+eq2.getKey().get(1));
                 if(eq1.getKey().get(0).equals(eq2.getKey().get(0))){//case 1
                     new_equation.add(eq2.getKey().get(1));
                     new_equation.add(eq1.getKey().get(1));
@@ -120,19 +121,19 @@ class Solution {
                 }
             }
         }
-        db.putAll(new_db);
+        db.putAll(new_db);//연립한 db를 기존 db에 붙임.
 
-        System.out.println(db.size());
-        System.out.println(db.entrySet().size());
-        for(Map.Entry<List<String>, Double> data: db.entrySet())
-            System.out.println("key: "+data.getKey().get(0)+", "+data.getKey().get(1)+" / value: "+data.getValue());
-
+        //System.out.println(db.size());
+        //System.out.println(db.entrySet().size());
+        //for(Map.Entry<List<String>, Double> data: db.entrySet())
+        //    System.out.println("key: "+data.getKey().get(0)+", "+data.getKey().get(1)+" / value: "+data.getValue());
 
         double[] result=new double[queries.size()];
         for(int i=0; i<queries.size(); i++){
-            boolean is_err=false;
-            for(char c: queries.get(i).get(0).toCharArray()){
-                if(!used_chars.contains(c)){
+            //쿼리에 equation으로 주어지지 않은 문자가 하나라도 있으면 결과값을 -1로 세팅하기위한 예외처리
+            boolean is_err=false;//에러 플래그
+            for(char c: queries.get(i).get(0).toCharArray()){//쿼리의 문자를 순회하며
+                if(!used_chars.contains(c)){//낮선 값이 있다면 에러 플래그를 세팅
                     is_err=true;
                     break;
                 }
@@ -150,9 +151,7 @@ class Solution {
 
             System.out.println("ab res: "+abbreviation(queries.get(i)));
             //db에 query식이 그대로 들어가 있는지 확인
-            if(db.containsKey(queries.get(i)))
-                result[i]=db.get(queries.get(i));
-            else if(db.containsKey(abbreviation(queries.get(i))))
+            if(db.containsKey(abbreviation(queries.get(i))))//약분한 쿼리를 기반으로 db 서칭. 미지수는 위의 예외처리에서 걸러짐.
                 result[i]=db.get(abbreviation(queries.get(i)));
             else
                 result[i]=-1;
@@ -160,5 +159,4 @@ class Solution {
 
         return result;
     }
-
 }
