@@ -1,5 +1,8 @@
 class Solution {
     private List<String> abbreviation(List<String> equation){
+        if(equation.get(0).matches(".*\\d.*") || equation.get(1).matches(".*\\d.*"))
+            return equation;
+            
         StringBuilder eq1=new StringBuilder(equation.get(0));
         StringBuilder eq2=new StringBuilder(equation.get(1));
 
