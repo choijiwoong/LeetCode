@@ -21,7 +21,7 @@ class Solution {
 
         //연립을 위해 동일한 항을 가지는 항을 찾아 나머지 두개를 이용하여, 연립 항 정보를 찾아 db에 넣는다.
         Map<List<String>, Double> new_db=new HashMap<>();
-        for(int i=0; i<3; i++) {
+        for(int i=0; i<5; i++) {
             for (Map.Entry<List<String>, Double> eq1 : db.entrySet()) {
                 for (Map.Entry<List<String>, Double> eq2 : db.entrySet()) {
                     if (eq1.equals(eq2))//동일한 값이면 넘어감. 연립할게없음
