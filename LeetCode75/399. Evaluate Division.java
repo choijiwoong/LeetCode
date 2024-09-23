@@ -61,7 +61,7 @@ class Solution {
                     } else if (eq1.getKey().get(1).equals(eq2.getKey().get(0))) {//case3
                         new_equation.add(eq1.getKey().get(0));
                         new_equation.add(eq2.getKey().get(1));
-                        new_value = eq1.getValue() / eq2.getValue();
+                        new_value = eq1.getValue() * eq2.getValue();
 
                         rev_new_equation.add(eq2.getKey().get(1));
                         rev_new_equation.add(eq1.getKey().get(0));
