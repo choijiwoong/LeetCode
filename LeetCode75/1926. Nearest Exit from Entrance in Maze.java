@@ -1,70 +1,41 @@
 class Solution {
     public int nearestExit(char[][] maze, int[] entrance) {
-        if(maze.length==0){
-            System.out.println("배열이 비어있습니다.");
-            return -1;
-        } else if(entrance.length!=2){
-            System.out.println("올바르지 않은 입구입니다.");
-            return -1;
+        int rowLength = maze.length;
+        int colLength = maze[0].length;
+        boolean[][] visited = new boolean[rowLength][colLength];
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(entrance); // 큐가 다 차면 예외를 반환하는 .add와 달리 false를 반환한다.
+        visited[entrance[0]][entrance[1]] = true;
+
+        int steps = 0;
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};//가능한 방향을 배열로
+
+        while (!queue.isEmpty()) {
+            int size = queue.size(); // Current level size
+
+            for (int i = 0; i < size; i++) {
+                int[] pos = queue.poll(); // .remove와 달리 비어있으면 null을 반환한다.
+
+                if ((pos[0] != entrance[0] || pos[1] != entrance[1]) &&
+                        (pos[0] == 0 || pos[1] == 0 || pos[0] == rowLength - 1 || pos[1] == colLength - 1)) {
+                    return steps;
+                } // 종료조건: 입구가 아닌 모서리인 경우 현재의 level을 리턴한다.
+                
+                for (int[] direction : directions) {//모든 이동가능한 방향에 대하여
+                    int newRow = pos[0] + direction[0];
+                    int newCol = pos[1] + direction[1];
+
+                    // IOR이 아니고 길에다 방문하지 않은 노드에 대해 enqueue를 수행한다.
+                    if (newRow >= 0 && newCol >= 0 && newRow < rowLength && newCol < colLength &&
+                            maze[newRow][newCol] == '.' && !visited[newRow][newCol]) {
+                        visited[newRow][newCol] = true;
+                        queue.offer(new int[] {newRow, newCol});
+                    }
+                }
+            }
+            steps++;
         }
 
-        Queue<int[]> queue=new LinkedList<>();
-        queue.add(entrance);
-
-        return bfs(maze, queue);
-    }
-
-    private int bfs(char[][] maze, Queue<int[]> queue){
-        int m=maze.length, n=maze[0].length;
-        int depth=-1;
-        int flag=queue.size();
-        boolean[][] is_visited=new boolean[m][n];
-        boolean is_found=false;
-
-        while(!queue.isEmpty()){
-            flag--;
-            if(flag==0){
-                depth++;
-                flag=queue.size();
-            }
-
-            int[] entrance = queue.remove();
-            int i = entrance[0], j = entrance[1];
-
-            //범위 초과
-            if (i < 0 || i >= m || j < 0 || j >= n) {
-                continue;
-            }
-
-            //방문했으면 패스
-            if(is_visited[i][j])
-                continue;
-            is_visited[i][j]=true;
-
-            //벽이면 패스
-            if (maze[i][j] == '+')
-                continue;
-            else if (depth != 0 //입구를 출구로 판단 방지
-                    && (i == 0 || i == m - 1 || j == 0 || j == n - 1) //모서리 확인
-            ) {
-                is_found=true;
-                break;
-            }
-
-            queue.add(new int[]{i - 1, j});
-            queue.add(new int[]{i + 1, j});
-            queue.add(new int[]{i, j - 1});
-            queue.add(new int[]{i, j + 1});
-        }
-        return is_found?depth:-1;
-    }
-
-    public void test(int result, int answer){
-        System.out.printf("answer: %d, result: %d\t", answer, result);
-        if(answer==result){
-            System.out.println("passed!");
-        } else{
-            System.out.println("fail!");
-        }
+        return -1; // Return -1 if no exit is found
     }
 }
