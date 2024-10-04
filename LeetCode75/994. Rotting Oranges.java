@@ -11,10 +11,12 @@ class Solution {
         int[] index;
         boolean is_finish;
         int min_minute=-1;
+        boolean is_exist_0=false, is_exist_1=false, is_exist_2=false;
 
         for(int i=0; i<m; i++){
             for(int j=0; j<n; j++){
                 if(grid[i][j]==2){
+                    is_exist_2=true;
                     //얘부터 시작했을 때
                     queue.add(new int[]{i, j});
                     grid_buf=new int[grid.length][grid[0].length];
@@ -61,9 +63,18 @@ class Solution {
                             min_minute=minute;
                         }
                     }
+                } else if(grid[i][j]==1){
+                    is_exist_1=true;
+                } else if(grid[i][j]==0){
+                    is_exist_0=true;
                 }
             }
         }
+        
+        if(is_exist_0 && !is_exist_1 && !is_exist_2)//비어있음
+            return 0;
+        else if(is_exist_1 && !is_exist_2)
+            return -1;
 
         return min_minute;
     }
