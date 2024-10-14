@@ -1,32 +1,32 @@
 class SmallestInfiniteSet {
-    PriorityQueue<Integer> queue;
-    int min_val=1;
-    
+    boolean[] avail=new boolean[1001];
+    int min_val=0;
+
     public SmallestInfiniteSet() {
-        queue=new PriorityQueue<Integer>();
+        Arrays.fill(avail, true);
     }
 
     public int popSmallest() {
         int min=min_val;
-        if(!queue.contains(min)){//가용한 값이라면
-            queue.add(min);
+        if(avail[min]){//가용한 값이라면
+            avail[min]=false;
             min_val=findNextMin(min);
-            return min;
+            return min+1;
         } else {//가용하지 않은 값이라면
             return -1;
         }
     }
 
     private int findNextMin(int min){
-        while(queue.contains(++min)){}
-        return min;
+        int i;
+        for(i=min+1; !avail[i]; i++){}
+        return i;
     }
 
     public void addBack(int num) {
-        if(queue.contains(num))
-            queue.remove(num);
-        if(min_val>num)
-            min_val=num;
+        avail[num-1]=true;
+        if(min_val>num-1)
+            min_val=num-1;
     }
 }
 
