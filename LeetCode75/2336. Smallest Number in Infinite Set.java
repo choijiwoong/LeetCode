@@ -3,18 +3,23 @@ class SmallestInfiniteSet {
 
     public SmallestInfiniteSet() {
         queue=new PriorityQueue<Integer>();
-        for(int i=1; i<1000; i++){
-            queue.add(i);
-        }
     }
 
     public int popSmallest() {
-        return queue.remove();
+        int min=1;
+        if(!queue.contains(min)){//가용한 값이라면
+            queue.add(min);
+            return min;
+        } else {//가용하지 않은 값이라면
+            while(queue.contains(++min)){}//가용한 값이 나올때까지++
+            queue.add(min);
+            return min;
+        }
     }
 
     public void addBack(int num) {
-        if(!queue.contains(num))
-            queue.add(num);
+        if(queue.contains(num))
+            queue.remove(num);
     }
 }
 
