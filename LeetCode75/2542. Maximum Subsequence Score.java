@@ -1,57 +1,46 @@
 class Solution {
-    private int[] sort_with_index(int[] nums){
-        Integer[] indices=new Integer[nums.length];//정렬 시 변경될 인덱스 정보를 저장할 인덱스 lookup table
-        for(int i=0; i<nums.length; i++)
-            indices[i]=i;//초기값 설정
-
-        Arrays.sort(indices, new Comparator<Integer>(){//Arrays.sort에서 특별한 조검을 지정하고 싶으면 Comparator객체를 생성해서 준다.
-            @Override
-            public int compare(Integer i1, Integer i2){//compare함수를 가지고 있으면 되고 반환타입읜 Comparator<>제네릭 타입을 따른다.
-                return Integer.compare(nums[i1], nums[i2]);//num1-num2보다 직관적으로 Integer.compare을 사용.
+    public int calculate(int[] nums1, int[] nums2, int[] indexes){
+        int sum=0, min=100000;
+        for(int i=0; i<indexes.length; i++){
+            sum+=nums1[indexes[i]];
+            if(nums2[indexes[i]]<min){
+                min=nums2[indexes[i]];
             }
-        });
+        }
+        int result_val=sum*min;
 
-        Arrays.sort(nums);//실제 배열 정렬
-
-        return Arrays.stream(indices).mapToInt(Integer::intValue).toArray();//Integer[]타입을 int[]로 변경
+        return result_val;
     }
     public long maxScore(int[] nums1, int[] nums2, int k) {
-        int length=nums1.length;
-        int[] tmp=new int[length];
-        for(int i=0; i<length; i++)
-            tmp[i]=nums1[i];
+        final int length=nums1.length;//1. 배열의 길이 저장
 
-        int[] sorted_nums1_indices=sort_with_index(nums1);
-        int min1=100000, sum1, max_val1=0;
-        for(int slidig_index=length-1; slidig_index>=k-1; slidig_index--) {
-            sum1=0;
-            for (int i = 0; i < k; i++) {
-                sum1 += nums1[length - 1 - i];
-                if (min1 > nums2[sorted_nums1_indices[slidig_index - i]]) {
-                    min1 = nums2[sorted_nums1_indices[slidig_index - i]];
+        int[] indexes=new int[k];//2. 인덱스들 초기값 세팅
+        for(int i=0; i<k; i++){
+            indexes[i]=i;
+        }
+
+        int max_val=0;
+        for(int i=0; i<k; i++){//3. 인덱스 접근 시작
+            int cur_idx=k-1;
+            for(int j=indexes[cur_idx]; j<length; j++){//4. 마지막 인덱스부터 ~ 끝 접근
+                indexes[cur_idx]=j;//5. 함수 전달을 위해 indexes 갱신
+                int result_val=calculate(nums1, nums2, indexes);//6. indexes기반 값 계산
+                if(result_val>max_val){//7. 최댓값 갱신
+                    max_val=result_val;
                 }
             }
-            if(max_val1<min1*sum1){
-                max_val1=min1*sum1;
+            //8. 다음 탐색을 위한 indexes 갱신. 앞의 indexes[]원소 탐색을 위해 앞 index를 ++, 뒤의 인덱스를 한칸 앞으로 옮겨야 한다.
+            if(cur_idx>0){//0번은 이전 원소가 없기 때문에
+                for(int j=cur_idx-1; j<k; j++){//9. 현재 탐색한 인덱스 앞 인덱스를 현재 인덱스로 옮기고 나머지는 +1한 값으로 갱신
+                    indexes[j]=j+1;//초기값에서 한칸씩 shift하여 갱신
+                }
+            } else{//0번 원소라면
+                for(int j=cur_idx; j<k; j++){//자기부터 shift하여 갱신
+                    indexes[j]=j+1;
+                }
             }
         }
 
-        int[] sorted_nums2_indices=sort_with_index(nums2);
-        int min2, sum2=0, max_val2=0;
-        for(int slidig_index=length-1; slidig_index>=k-1; slidig_index--) {
-            min2 = nums2[slidig_index];
-            for (int i = 0; i < k; i++) {
-                sum2 += tmp[sorted_nums2_indices[slidig_index - i]];
-                if(nums2[slidig_index-i]<min2) {
-                    min2 = nums2[slidig_index - i];
-                }
-            }
-            if(max_val2<min2*sum2){
-                max_val2=min2*sum2;
-            }
-            sum2=0;
-        }
-        System.out.printf("(max_val1: %4d, max_val2: %4d) / ", max_val1, max_val2);
-        return max_val1>max_val2?max_val1:max_val2;
+        return max_val;
     }
 }
