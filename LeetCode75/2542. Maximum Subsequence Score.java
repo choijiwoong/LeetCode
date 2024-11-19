@@ -1,47 +1,36 @@
 class Solution {
-        public List<List<Integer>> getCombinations(int[] arr, int n){
-        List<List<Integer>> result=new ArrayList<>();
-        backtrack(arr, n, 0, new ArrayList<>(), result);
-        return result;
-    }
-
-    public void backtrack(int[] arr, int n, int start, List<Integer> current, List<List<Integer>> result){
+private int[] nums1, nums2;
+    public int backtrack(int[] nums1, int[] nums2, int[] arr, int n, int start, List<Integer> current){
+        int max_score=0;
         if(current.size()==n){
-            result.add(new ArrayList<>(current));
-            return;
+            int score=calculate_score(nums1, nums2, current);
+            if(max_score<score)
+                max_score=score;
+            return max_score;
         }
 
         for(int i=start; i<arr.length; i++){
             current.add(arr[i]);
-            backtrack(arr, n, i+1, current, result);
+            int score=backtrack(nums1, nums2, arr, n, i+1, current);
+            if(max_score<score)
+                max_score=score;
             current.remove(current.size()-1);
         }
+        return max_score;
     }
+
+    public int calculate_score(int[] nums1, int[] nums2, List<Integer> combination){
+        int min=combination.stream().mapToInt(i->nums2[i]).min().orElse(Integer.MIN_VALUE);
+        int sum=combination.stream().mapToInt(i->nums1[i]).sum();
+        return sum*min;
+    }
+
     public long maxScore(int[] nums1, int[] nums2, int k) {
         final int length=nums1.length;
 
         //1. Combination에 사용할 index 리스트 초기화
-        int[] indexes=new int[length];
-        for(int i=0; i<length; i++){
-            indexes[i]=i;
-        }
-
-        List<List<Integer>> combinations=getCombinations(indexes, k);//k개의 인덱스 조합 리스트
-
-        int score=0, max_score=0;
-        int min=10000, sum=0;
-        for(List<Integer> combination: combinations){
-            min=10000; sum=0;
-            for(int i: combination){
-                sum+=nums1[i];
-                if(min>nums2[i])
-                    min=nums2[i];
-            }
-            score=sum*min;
-            if(score>max_score)
-                max_score=score;
-        }
-
-        return max_score;
+        int[] indexes=IntStream.range(0, length).toArray();
+        //2. backtracking
+        return backtrack(nums1, nums2, indexes, k, 0, new ArrayList<>());
     }
 }
