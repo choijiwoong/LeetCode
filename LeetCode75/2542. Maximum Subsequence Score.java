@@ -1,57 +1,47 @@
 class Solution {
-    public int calculate(int[] nums1, int[] nums2, int[] indexes){
-        int sum=0, min=100000;
-        for(int i=0; i<indexes.length; i++){
-            sum+=nums1[indexes[i]];
-            if(nums2[indexes[i]]<min){
-                min=nums2[indexes[i]];
-            }
-        }
-        int result_val=sum*min;
+        public List<List<Integer>> getCombinations(int[] arr, int n){
+        List<List<Integer>> result=new ArrayList<>();
+        backtrack(arr, n, 0, new ArrayList<>(), result);
+        return result;
+    }
 
-        return result_val;
+    public void backtrack(int[] arr, int n, int start, List<Integer> current, List<List<Integer>> result){
+        if(current.size()==n){
+            result.add(new ArrayList<>(current));
+            return;
+        }
+
+        for(int i=start; i<arr.length; i++){
+            current.add(arr[i]);
+            backtrack(arr, n, i+1, current, result);
+            current.remove(current.size()-1);
+        }
     }
     public long maxScore(int[] nums1, int[] nums2, int k) {
-        final int length=nums1.length;//1. 배열의 길이 저장
+        final int length=nums1.length;
 
-        int[] indexes=new int[k];//2. 인덱스들 초기값 세팅
-        for(int i=0; i<k; i++){
+        //1. Combination에 사용할 index 리스트 초기화
+        int[] indexes=new int[length];
+        for(int i=0; i<length; i++){
             indexes[i]=i;
         }
 
-        int max_val=0;
-        for(int i=0; i<k; i++){//3. 인덱스 접근 시작
-            int cur_idx=k-1;
-            for(int j=indexes[cur_idx]; j<length; j++){//4. 마지막 인덱스부터 ~ 끝 접근
-                indexes[cur_idx]=j;//5. 함수 전달을 위해 indexes 갱신
-                int result_val=calculate(nums1, nums2, indexes);//6. indexes기반 값 계산
-                //print_indexes(indexes);
-                if(result_val>max_val){//7. 최댓값 갱신
-                    max_val=result_val;
-                }
-            }
+        List<List<Integer>> combinations=getCombinations(indexes, k);//k개의 인덱스 조합 리스트
 
-                            //모든 케이스에서 [..., 7, 8]이 누락됨을 확인해서 [..., 6, 8]상태에서 수정하여 따로 처리
-                if(k>2) {
-                    indexes[k - 2]++;
-                    int result_val = calculate(nums1, nums2, indexes);
-                    //print_indexes(indexes, cur_idx, result_val);
-                    if (result_val > max_val) {
-                        max_val = result_val;
-                    }
-                }
-
-            //8. 다음 탐색을 위한 indexes 갱신. 앞의 indexes[]원소 탐색을 위해 앞 index를 ++, 뒤의 인덱스를 한칸 앞으로 옮겨야 한다.
-            if(cur_idx-i-1>=0){//0번은 이전 원소가 없기 때문에
-                for(int j=cur_idx-i-1; j<k; j++){//9. 현재 탐색한 인덱스 앞 인덱스를 현재 인덱스로 옮기고 나머지는 +1한 값으로 갱신
-                    indexes[j]=j+1;//초기값에서 한칸씩 shift하여 갱신
-                }
-            } else{//0번 원소라면
-                for(int j=cur_idx-i; j<k; j++){//자기부터 shift하여 갱신
-                    indexes[j]=j+1;
-                }
+        int score=0, max_score=0;
+        int min=10000, sum=0;
+        for(List<Integer> combination: combinations){
+            min=10000; sum=0;
+            for(int i: combination){
+                sum+=nums1[i];
+                if(min>nums2[i])
+                    min=nums2[i];
             }
+            score=sum*min;
+            if(score>max_score)
+                max_score=score;
         }
-        return max_val;
+
+        return max_score;
     }
 }
