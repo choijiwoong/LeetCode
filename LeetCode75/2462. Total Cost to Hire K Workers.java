@@ -18,18 +18,8 @@ class Solution {
                     min_cost=costs[j];
                 }
             }
-            if(candidates+offset>LENGTH-candidates){//범위가 겹치는가? k고려해야할거같은데 차피 겹치면뭐..
-                for(int j=candidates+offset; j<LENGTH; j++){
-                    if(costs[j]==-1){
-                        offset++;
-                        continue;
-                    }
-                    if(costs[j]<min_cost){
-                        min_index=j;
-                        min_cost=costs[j];
-                    }
-                }
-            } else{//범위가 안겹치는가?
+
+            if(candidates+offset<=LENGTH-candidates){//범위가 안겹치는가?
                 offset=0;
                 for(int j=LENGTH-1; j>=LENGTH-candidates+offset; j--){
                     if(costs[j]==-1){
