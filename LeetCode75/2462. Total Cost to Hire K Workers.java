@@ -1,35 +1,37 @@
 class Solution {
     public long totalCost(int[] costs, int k, int candidates) {
-        int LENGTH = costs.length;
-        long cost = 0;
+        // 뛰어난 최적화 버전. 앞 범위와 뒷 범위의 heap을 구분한 뒤, 경계를 의미하는 start와 end를 두었다.
+        // 각각의 범위를 별개로 구분하여 부족한(remove한) 범위에 원소를 정확히 추가하고, 겹치는 부분은 start와 end를 비교하여 추가하지 않는다.
+        PriorityQueue<Integer> fheap = new PriorityQueue<>();
+        PriorityQueue<Integer> sheap = new PriorityQueue<>();
+        int start = 0;
+        int end = costs.length - 1;
+        long ans = 0;
 
-        // MinHeap 초기화
-        PriorityQueue<Integer> minHeap = new PriorityQueue<>(
-                (a, b) -> costs[a] != costs[b] ? Integer.compare(costs[a], costs[b]) : Integer.compare(a, b)
-        ); // 비용이 같은 경우 인덱스를 비교하여 앞 쪽 인덱스를 우선으로 둔다.
+        while (k-- > 0) {
 
-        // 두 포인터를 사용해 후보 영역 관리
-        int left = 0, right = LENGTH - 1;
+            while (fheap.size() < candidates && start <= end) {
 
-        // 초기 후보 범위를 MinHeap에 추가
-        for (int i = 0; i < candidates; i++) {
-            if (left <= right) minHeap.add(left++);
-            if (left <= right) minHeap.add(right--);
-        }
+                fheap.offer(costs[start]);
+                start++;
+            }
 
-        // k명을 추출하며 비용 계산
-        for (int i = 0; i < k; i++) {
-            int removedIndex = minHeap.poll();
-            cost += costs[removedIndex];
+            while (sheap.size() < candidates && start <= end) {
+                sheap.offer(costs[end]);
+                end--;
+            }
 
-            // 후보 영역에 남은 값 추가
-            if (removedIndex <= left && left <= right) { // 와.. 그냥 left right로 양쪽 candidates 범위 경계를 지정하면 되는구나..
-                minHeap.add(left++);
-            } else if (removedIndex >= right && right >= left) {
-                minHeap.add(right--);
+            int t1 = fheap.size() > 0 ? fheap.peek() : Integer.MAX_VALUE;
+            int t2 = sheap.size() > 0 ? sheap.peek() : Integer.MAX_VALUE;
+
+            if (t1 <= t2) {
+                ans += t1;
+                fheap.poll();
+            } else {
+                ans += t2;
+                sheap.poll();
             }
         }
-
-        return cost;
+        return ans;
     }
 }
