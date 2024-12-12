@@ -3,10 +3,9 @@ class Solution {
         int[] result=new int[spells.length];
 
         for(int i=0; i<spells.length; i++){
-            long score=0;
+            double limit=success*1.0/spells[i];
             for(int j=0; j<potions.length; j++){
-                score=spells[i]*potions[j];
-                if(score>=success){
+                if(potions[j]>=limit){
                     result[i]++;
                 }
             }
