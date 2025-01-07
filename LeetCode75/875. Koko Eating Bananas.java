@@ -1,27 +1,21 @@
 class Solution {
     public int minEatingSpeed(int[] piles, int h) {
-        int hour;
-        int length=piles.length;
-        int max=Arrays.stream(piles).max().getAsInt();
-        int start_k=1, end_k=max;
-        int mid_k=(start_k+end_k)/2;
+        int front=1, end=Arrays.stream(piles).max().getAsInt();
 
-        while(true){
-            hour=0;
-            for(int i=0; i<length; i++){
-                hour+=Math.ceil(piles[i]*1.0/mid_k);
-            }
+        while(front<end){ // 조건확인 1번만 수행
+            int mid=(front+end)/2; // mid 값 갱신도 1번만 수행
+            int hour=0;
 
-            if (hour==h) {
-                break;
-            } else if (hour<h){
-                end_k=mid_k-1;
+            for(int pile: piles)
+                hour+=(pile+mid-1)/mid;// 정수 올림 최적화
+
+            if(hour>h){
+                front=mid+1;
             } else{
-                start_k=mid_k+1;
+                end=mid;
             }
-            mid_k=(start_k+end_k)/2;
         }
 
-        return mid_k;
+        return front;
     }
 }
