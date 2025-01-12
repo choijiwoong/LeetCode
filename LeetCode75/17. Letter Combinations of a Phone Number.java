@@ -1,5 +1,6 @@
 class Solution {
     public List<String> letterCombinations(String digits) {
+        // 숫자에 매칭되는 알파벳으로 변환하기 위한 룩업 테이블
         HashMap<Character, char[]> num_to_alpha=new HashMap<Character, char[]>();
         num_to_alpha.put('2', new char[]{'a', 'b', 'c'});
         num_to_alpha.put('3', new char[]{'d', 'e', 'f'});
@@ -11,25 +12,37 @@ class Solution {
         num_to_alpha.put('9', new char[]{'w', 'x', 'y', 'z'});
 
         List<String> result=new ArrayList<>();
-        int total_of_cases=digits.length()==0?0:1;
-        for(char digit: digits.toCharArray()){
-            total_of_cases*=num_to_alpha.get(digit).length;
-        }
-        System.out.println("total_of_cases: "+total_of_cases);
-        int length=digits.length();
-        for(int i=0; i<total_of_cases; i++){
-            result.add("");
-        }
+        switch(digits.length()){
+            case 0:
+                return result;
 
-        for(int i=0; i<length; i++){
-            char digit=digits.charAt(i);
-            char[] cases=num_to_alpha.get(digit);
-            for(int j=0; j<total_of_cases; j++){
-                String prev_result=result.get(j);
-                result.set(j, prev_result.concat(String.valueOf(cases[j%(cases.length)])));
-            }
-        }
+            case 1:
+                for(char c: num_to_alpha.get(digits.charAt(0)))
+                    result.add(String.valueOf(c));
+                return result;
 
+            case 2:
+                for(char c: num_to_alpha.get(digits.charAt(0)))
+                    for(char c2: num_to_alpha.get(digits.charAt(1)))
+                        result.add(String.valueOf(c).concat(String.valueOf(c2)));
+                break;
+            case 3:
+                for(char c: num_to_alpha.get(digits.charAt(0)))
+                    for(char c2: num_to_alpha.get(digits.charAt(1)))
+                        for(char c3: num_to_alpha.get(digits.charAt(2)))
+                            result.add(String.valueOf(c).concat(String.valueOf(c2)).concat(String.valueOf(c3)));
+                break;
+            case 4:
+                for(char c: num_to_alpha.get(digits.charAt(0)))
+                    for(char c2: num_to_alpha.get(digits.charAt(1)))
+                        for(char c3: num_to_alpha.get(digits.charAt(2)))
+                            for(char c4: num_to_alpha.get(digits.charAt(3)))
+                                result.add(String.valueOf(c).concat(String.valueOf(c2)).concat(String.valueOf(c3)).concat(String.valueOf(c4)));
+                break;
+            default:
+                System.out.println("ERROR");
+                break;
+        }
         return result;
     }
 }
