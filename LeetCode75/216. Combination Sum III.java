@@ -18,7 +18,27 @@ class Solution {
             num/=10;
         }
         result.add(num%10);
+
+        Collections.sort(result);//중복 확인을 위해 내부 순서 정렬하여 저장
+
         return result;
+    }
+
+    private boolean is_valid(int num){
+        List<Integer> numarr=intarr_to_IntegerList(num);
+
+        //중복되는 수가 있는지 체크
+        int distinct_size=numarr.stream().distinct().collect(Collectors.toList()).size();
+        int origin_size=numarr.size();
+        if(distinct_size!=origin_size){
+            return false;
+        }
+
+        //0이 있는지 체크
+        if(numarr.contains(0)){
+            return false;
+        }
+        return true;
     }
     public List<List<Integer>> combinationSum3(int k, int n) {// 숫자 k의 합이 n이 되어야 한다.
         List<List<Integer>> result=new ArrayList<>();
@@ -34,12 +54,12 @@ class Solution {
         }
         for(int num=start_num; num<=end_num; num++){
             int sum=sum_of_digits(num);
-            if(sum==n){
+            if(sum==n && is_valid(num)){
                 System.out.println(num);
                 result.add(intarr_to_IntegerList(num));
             }
         }
 
-        return result;
+        return result.stream().distinct().collect(Collectors.toList());
     }
 }
