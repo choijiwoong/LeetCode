@@ -1,33 +1,25 @@
 class Solution {
-    int min_cost=10000;
-    private void backtracking(int[] cost, List<Integer> current_indexs){
-        //System.out.println(current_indexs);
-        int cur_index=current_indexs.get(current_indexs.size()-1);
-        if(cur_index>=cost.length-1){
-            if(cur_index!=cost.length-1)
-                current_indexs.remove(current_indexs.size()-1);
-            int cost_sum=0;
-            for(int idx: current_indexs)
-                cost_sum+=cost[idx];
-            if(cost_sum<min_cost)
-                min_cost=cost_sum;
-            return;
-        }
-        List<Integer> new_indexes1=new ArrayList<>(current_indexs);
-        new_indexes1.add(cur_index+1);
-        List<Integer> new_indexes2=new ArrayList<>(current_indexs);
-        new_indexes2.add(cur_index+2);
-        backtracking(cost, new_indexes1);
-        backtracking(cost, new_indexes2);
-    }
     public int minCostClimbingStairs(int[] cost) {
-        List<Integer> cur_idx1=new ArrayList<>();
-        cur_idx1.add(0);
-        List<Integer> cur_idx2=new ArrayList<>();
-        cur_idx2.add(1);
-        backtracking(cost, cur_idx1);
-        backtracking(cost, cur_idx2);
+        int length=cost.length;
+        if(length==1)
+            return 0;
+        else if(length==2){
+            return cost[0]>cost[1]?cost[1]:cost[0];
+        } else if(length==3){
+            return cost[1]<cost[0]+cost[2]?cost[1]:cost[0]+cost[2];
+        }
 
-        return min_cost;
+        int[] accumulated_cost=new int[length];
+        accumulated_cost[length-1]=cost[length-1];
+        accumulated_cost[length-2]=cost[length-2];
+        for(int i=length-3; i>=0; i--){
+            if(accumulated_cost[i+1]<accumulated_cost[i+2]){
+                accumulated_cost[i]=accumulated_cost[i+1]+cost[i];
+            } else {
+                accumulated_cost[i]=accumulated_cost[i+2]+cost[i];
+            }
+        }
+
+        return accumulated_cost[0]>accumulated_cost[1]?accumulated_cost[1]:accumulated_cost[0];
     }
 }
