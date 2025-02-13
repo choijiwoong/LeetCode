@@ -26,12 +26,21 @@ class Solution {
         
         int max_money=0;
         boolean[] visited=new boolean[length];
-        for(int i=0; i<length; i++){//모든 원소에 대하여 차례로(상대 값이 큰 순서대로 접근)
-            int cur_idx=relative_nums[i][1];//현재 원소의 기존 인덱스
-            if(is_available(visited, cur_idx)){//접근 가능한지 확인(방문처리된 위치로 부터 이웃해 있지 않은지 여부
-                max_money+=nums[cur_idx];//최댓값에 가산
-                visited[cur_idx]=true;//방문처리
+        for(int start=0; start<length/2; start++) {//최댓값을 포함하지 않는 경우까지 고려하기 위함.
+            int money=0;
+            for (int i = start; i < length; i++) {//모든 원소에 대하여 차례로(상대 값이 큰 순서대로 접근)
+                int cur_idx = relative_nums[i][1];//현재 원소의 기존 인덱스
+                if (is_available(visited, cur_idx)) {//접근 가능한지 확인(방문처리된 위치로 부터 이웃해 있지 않은지 여부
+                    money += nums[cur_idx];//최댓값에 가산
+                    visited[cur_idx] = true;//방문처리
+                }
             }
+            if(money>max_money)
+                max_money=money;
+            for(int i=0; i<length; i++){//방문 초기화
+                visited[i]=false;
+            }
+            //System.out.println(money);
         }
 
         return max_money;
