@@ -7,11 +7,14 @@ class Solution {
         if(n==5) return 24;
         if(n==6) return 53;
 
-        List<Integer> index_table=new ArrayList<>();
-        index_table.add(1); index_table.add(2); index_table.add(5);
-        for(int i=3; i<n; i++)
-            index_table.add(index_table.get(i-1)*2+index_table.get(i-3));
-        
-        return index_table.get(n-1);
+        final int MODULO_VALUE=1000000007;
+
+        List<Long> index_table=new ArrayList<>();
+        index_table.add(1l); index_table.add(2l); index_table.add(5l);
+        for(int i=3; i<n; i++) {
+            long new_val=index_table.get(i - 1) * 2 + index_table.get(i - 3);
+            index_table.add(new_val%MODULO_VALUE);
+        }
+        return Math.toIntExact(index_table.get(n - 1));
     }
 }
