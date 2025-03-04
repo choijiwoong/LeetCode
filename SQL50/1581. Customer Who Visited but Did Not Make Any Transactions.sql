@@ -1,0 +1,1 @@
+select v.customer_id, count(t.transaction_id) as count_no_trans from Visits as v, Transactions as t where v.visit_id not in (select visit_id from Transactions);
