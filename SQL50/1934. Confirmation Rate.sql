@@ -3,4 +3,4 @@ FROM Signups as s
 LEFT JOIN Confirmations as c
 ON s.user_id=c.user_id
 GROUP BY s.user_id
-;
+; # 권한 테스트
